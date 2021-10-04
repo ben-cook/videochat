@@ -9,6 +9,7 @@ import RoomTitle from "./RoomTitle";
 export type RemoteStream = {
   userID: string;
   stream: MediaStream;
+  name: string;
 };
 
 interface Props {
@@ -54,9 +55,9 @@ const Room = ({ clientID, roomID, localName }: Props) => {
 
     socket.emit("join-room", roomID, clientID, localName);
 
-    socket.on("user-connected", (userID) => {
+    socket.on("user-connected", (userID, userName) => {
       if (localStream) {
-        connectToNewUser(userID, localStream);
+        connectToNewUser(userID, localStream, userName);
       }
     });
 
@@ -82,21 +83,33 @@ const Room = ({ clientID, roomID, localName }: Props) => {
           streams.filter((stream) => stream.userID !== call.peer)
         );
 
-        addVideoStream({ userID: call.peer, stream: userVideoStream });
+        addVideoStream({
+          userID: call.peer,
+          stream: userVideoStream,
+          name: call.metadata.name,
+        });
       });
     });
 
-    const connectToNewUser = (userID: string, stream: MediaStream) => {
+    const connectToNewUser = (
+      userID: string,
+      stream: MediaStream,
+      userName: string
+    ) => {
       console.log(`Calling ${userID}`);
 
-      const call = peer.call(userID, stream);
+      const call = peer.call(userID, stream, { metadata: { name: localName } });
 
       call.on("stream", (userVideoStream) => {
         console.log(`Remote peer ${userID} (who we called) added a stream`);
         setVideoStreams((streams) =>
           streams.filter((stream) => stream.userID !== userID)
         );
-        addVideoStream({ userID, stream: userVideoStream });
+        addVideoStream({
+          userID,
+          stream: userVideoStream,
+          name: userName,
+        });
       });
 
       call.on("close", () => {
@@ -145,8 +158,8 @@ const Room = ({ clientID, roomID, localName }: Props) => {
               <Grid item xs={12} sm={6} md={6}>
                 <Video
                   stream={foreignStream.stream}
-                  name={foreignStream.userID}
-                  key={idx}
+                  name={foreignStream.name}
+                  key={foreignStream.userID}
                   mute={false}
                 />
               </Grid>

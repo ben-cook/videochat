@@ -5,10 +5,9 @@ import { useState } from "react";
 
 interface Props {
   roomID: string;
-  connected: boolean;
 }
 
-const RoomTitle = ({ roomID, connected: connectionStatus }: Props) => {
+const RoomTitle = ({ roomID }: Props) => {
   const [copied, setCopied] = useState<boolean>(false);
 
   const handleClick = () => {
@@ -22,8 +21,7 @@ const RoomTitle = ({ roomID, connected: connectionStatus }: Props) => {
   return (
     <>
       <Typography variant="h2" display="inline">
-        Room {roomID.split("-")[0]} -{" "}
-        {connectionStatus ? "connected" : "disconnected"}
+        Room {roomID.split("-")[0]}
       </Typography>
 
       <IconButton onClick={handleClick}>

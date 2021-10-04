@@ -1,4 +1,4 @@
-import { Button, Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import Peer, { MediaConnection } from "peerjs";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
@@ -37,8 +37,6 @@ const Room = ({ clientID, roomID, localName }: Props) => {
   //   })
   // );
 
-  const [connected, setConnected] = useState<boolean>(false);
-
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({
@@ -50,91 +48,79 @@ const Room = ({ clientID, roomID, localName }: Props) => {
       });
   }, []);
 
-  const connectToRoom = () => {
-    const socket = io("http://localhost:8000");
+  useEffect(() => {
+    if (localStream) {
+      const socket = io("http://localhost:8000");
 
-    socket.emit("join-room", roomID, clientID, localName);
+      socket.emit("join-room", roomID, clientID, localName);
 
-    socket.on("user-connected", (userID, userName) => {
-      if (localStream) {
-        connectToNewUser(userID, localStream, userName);
-      }
-    });
-
-    socket.on("user-disconnected", (userID) => {
-      removeVideoStream(userID);
-    });
-
-    setConnected(true);
-
-    const peer = new Peer(clientID, {
-      host: "localhost",
-      port: 9000,
-      path: "/myapp",
-    });
-
-    peer.on("call", (call: MediaConnection): void => {
-      console.log(`Answering a call from ${call.peer}`);
-
-      call.answer(localStream!);
-
-      call.on("stream", (userVideoStream: MediaStream): void => {
-        setVideoStreams((streams) =>
-          streams.filter((stream) => stream.userID !== call.peer)
-        );
-
-        addVideoStream({
-          userID: call.peer,
-          stream: userVideoStream,
-          name: call.metadata.name,
-        });
-      });
-    });
-
-    const connectToNewUser = (
-      userID: string,
-      stream: MediaStream,
-      userName: string
-    ) => {
-      console.log(`Calling ${userID}`);
-
-      const call = peer.call(userID, stream, { metadata: { name: localName } });
-
-      call.on("stream", (userVideoStream) => {
-        console.log(`Remote peer ${userID} (who we called) added a stream`);
-        setVideoStreams((streams) =>
-          streams.filter((stream) => stream.userID !== userID)
-        );
-        addVideoStream({
-          userID,
-          stream: userVideoStream,
-          name: userName,
-        });
+      socket.on("user-connected", (userID, userName) => {
+        if (localStream) {
+          connectToNewUser(userID, localStream, userName);
+        }
       });
 
-      call.on("close", () => {
+      socket.on("user-disconnected", (userID) => {
         removeVideoStream(userID);
       });
-    };
-  };
+
+      const peer = new Peer(clientID, {
+        host: "localhost",
+        port: 9000,
+        path: "/myapp",
+      });
+
+      peer.on("call", (call: MediaConnection): void => {
+        console.log(`Answering a call from ${call.peer}`);
+
+        call.answer(localStream!);
+
+        call.on("stream", (userVideoStream: MediaStream): void => {
+          setVideoStreams((streams) =>
+            streams.filter((stream) => stream.userID !== call.peer)
+          );
+
+          addVideoStream({
+            userID: call.peer,
+            stream: userVideoStream,
+            name: call.metadata.name,
+          });
+        });
+      });
+
+      const connectToNewUser = (
+        userID: string,
+        stream: MediaStream,
+        userName: string
+      ) => {
+        console.log(`Calling ${userID}`);
+
+        const call = peer.call(userID, stream, {
+          metadata: { name: localName },
+        });
+
+        call.on("stream", (userVideoStream) => {
+          console.log(`Remote peer ${userID} (who we called) added a stream`);
+          setVideoStreams((streams) =>
+            streams.filter((stream) => stream.userID !== userID)
+          );
+          addVideoStream({
+            userID,
+            stream: userVideoStream,
+            name: userName,
+          });
+        });
+
+        call.on("close", () => {
+          removeVideoStream(userID);
+        });
+      };
+    }
+  }, [clientID, localName, localStream, roomID]);
 
   return (
     <>
-      <RoomTitle roomID={roomID} connected={connected} />
-
-      <Typography variant="h6">Client ID: {clientID.split("-")[0]}</Typography>
-
-      <Button variant="contained" onClick={connectToRoom} disabled={connected}>
-        Connect
-      </Button>
-
-      <Button
-        variant="contained"
-        onClick={() => console.log("disconnect")}
-        disabled={connected}
-      >
-        Disconnect
-      </Button>
+      <RoomTitle roomID={roomID} />
 
       {/* <Button
         variant="contained"

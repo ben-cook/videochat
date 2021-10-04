@@ -4,6 +4,8 @@ import { useParams } from "react-router";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import Video from "./Video";
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
+import SaveIcon from "@mui/icons-material/Save";
 
 export type RemoteStream = {
   userID: string;
@@ -23,6 +25,14 @@ const Room = ({ clientID }: { clientID: string }) => {
     );
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+
+  // const localPeer = useRef<Peer>(
+  //   new Peer(clientID, {
+  //     host: "localhost",
+  //     port: 9000,
+  //     path: "/myapp",
+  //   })
+  // );
 
   const [connected, setConnected] = useState<boolean>(false);
 
@@ -70,21 +80,11 @@ const Room = ({ clientID }: { clientID: string }) => {
       call.answer(localStream!);
 
       call.on("stream", (userVideoStream: MediaStream): void => {
-        console.log(`Remote peer ${call.peer} (who called us) added a stream`);
+        setVideoStreams((streams) =>
+          streams.filter((stream) => stream.userID !== call.peer)
+        );
 
-        // If we're not already connected with them, add them
-        if (
-          !videoStreams.some(
-            (remoteStream) => remoteStream.userID === call.peer
-          )
-        ) {
-          console.log(`adding ${call.peer} `);
-          console.log(videoStreams);
-
-          addVideoStream({ userID: call.peer, stream: userVideoStream });
-        } else {
-          console.log(`not adding ${call.peer} `);
-        }
+        addVideoStream({ userID: call.peer, stream: userVideoStream });
       });
     });
 
@@ -95,6 +95,9 @@ const Room = ({ clientID }: { clientID: string }) => {
 
       call.on("stream", (userVideoStream) => {
         console.log(`Remote peer ${userID} (who we called) added a stream`);
+        setVideoStreams((streams) =>
+          streams.filter((stream) => stream.userID !== userID)
+        );
         addVideoStream({ userID, stream: userVideoStream });
       });
 
@@ -133,14 +136,22 @@ const Room = ({ clientID }: { clientID: string }) => {
 
       <Grid container spacing={2}>
         {localStream && localStream.active && (
-          <Video stream={localStream} userID={"LOCAL"} />
+          <Grid item xs={12} sm={6} md={6}>
+            <Video stream={localStream} name={"LOCAL"} />
+          </Grid>
         )}
 
         {videoStreams.map(
           (foreignStream: RemoteStream, idx) =>
             foreignStream &&
             foreignStream.stream.active && (
-              <Video {...foreignStream} key={idx} />
+              <Grid item xs={12} sm={6} md={6}>
+                <Video
+                  stream={foreignStream.stream}
+                  name={foreignStream.userID}
+                  key={idx}
+                />
+              </Grid>
             )
         )}
       </Grid>

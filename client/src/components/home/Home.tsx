@@ -1,20 +1,42 @@
 import { Button, Typography } from "@mui/material";
-import { useHistory } from "react-router";
+import { Box } from "@mui/system";
+import { Link as RouterLink } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
 
-const Home = () => {
-  const history = useHistory();
+import JoinCustomRoom from "./JoinCustomRoom";
 
+const Home = () => {
   return (
-    <>
-      <Typography variant="h1">Home</Typography>
+    <Box textAlign="center">
+      <div style={{ display: "block" }}>
+        <Typography variant="h4" display="inline">
+          Welcome to{" "}
+          <Typography
+            variant="h4"
+            display="inline"
+            sx={{ color: "primary.main" }}
+          >
+            {" "}
+            videochat
+          </Typography>
+        </Typography>
+      </div>
+
       <Button
         variant="contained"
-        onClick={() => history.push(`/room/${uuidV4()}`)}
+        component={RouterLink}
+        to={`/room/${uuidV4()}`}
+        sx={{ marginTop: 2 }}
       >
-        Join a new room
+        <Typography variant="button">Make a new room</Typography>
       </Button>
-    </>
+
+      <Typography variant="h4" sx={{ margin: 3 }}>
+        OR
+      </Typography>
+
+      <JoinCustomRoom />
+    </Box>
   );
 };
 export default Home;

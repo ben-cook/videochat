@@ -11,3 +11,5 @@ services:
     ports:
       - "8000:8000"
     command: node build/server.js
+  peerjs:
+    image: peerjs/peerjs-server

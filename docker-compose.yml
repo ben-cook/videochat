@@ -1,6 +1,16 @@
 version: "3.7"
 
 services:
+  client:
+    build:
+      target: production
+      context: ./client
+      dockerfile: Dockerfile
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    command: npm run start
   server:
     build:
       target: production
@@ -13,3 +23,7 @@ services:
     command: node build/server.js
   peerjs:
     image: peerjs/peerjs-server
+    expose:
+      - "9000"
+    ports:
+      - "9000:9000"

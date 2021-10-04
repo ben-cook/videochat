@@ -1,9 +1,16 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const JoinCustomRoom = () => {
+  const history = useHistory();
   const [roomCode, setRoomCode] = useState<string>("");
+
+  const handleClick = () => {
+    if (/[a-zA-Z0-9]{4,}/.test(roomCode)) {
+      history.push(`/room/${roomCode.toLocaleUpperCase()}`);
+    }
+  };
 
   return (
     <Grid container>
@@ -17,8 +24,7 @@ const JoinCustomRoom = () => {
         <Grid item>
           <Button
             variant="contained"
-            component={RouterLink}
-            to={`/room/${roomCode}`}
+            onClick={handleClick}
             sx={{ marginTop: 2 }}
           >
             <Typography variant="button">Join a custom room</Typography>

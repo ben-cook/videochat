@@ -21,7 +21,7 @@ const RoomTitle = ({ roomID }: Props) => {
   return (
     <>
       <Typography variant="h2" display="inline">
-        Room {roomID.split("-")[0]}
+        Room {roomID}
       </Typography>
 
       <IconButton onClick={handleClick}>

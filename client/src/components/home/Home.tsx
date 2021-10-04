@@ -1,7 +1,7 @@
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Link as RouterLink } from "react-router-dom";
-import { v4 as uuidV4 } from "uuid";
+import { makeid } from "../../util";
 
 import JoinCustomRoom from "./JoinCustomRoom";
 
@@ -25,7 +25,7 @@ const Home = () => {
       <Button
         variant="contained"
         component={RouterLink}
-        to={`/room/${uuidV4()}`}
+        to={`/room/${makeid(4)}`}
         sx={{ marginTop: 2 }}
       >
         <Typography variant="button">Make a new room</Typography>

@@ -1,21 +1,23 @@
 import { Button, Grid, Typography } from "@mui/material";
 import Peer, { MediaConnection } from "peerjs";
-import { useParams } from "react-router";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import Video from "./Video";
-import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import SaveIcon from "@mui/icons-material/Save";
+
+import RoomTitle from "./RoomTitle";
 
 export type RemoteStream = {
   userID: string;
   stream: MediaStream;
 };
 
-const Room = ({ clientID }: { clientID: string }) => {
-  const { roomID } = useParams<{ roomID: string }>();
-  // const videoRef = createRef<HTMLVideoElement>();
-  // const [videos, setVideos] = useState<any>([]);
+interface Props {
+  clientID: string;
+  roomID: string;
+  localName: string;
+}
+
+const Room = ({ clientID, roomID, localName }: Props) => {
   const [videoStreams, setVideoStreams] = useState<RemoteStream[]>([]);
   const addVideoStream = (newStream: RemoteStream) =>
     setVideoStreams((streams: RemoteStream[]) => [...streams, newStream]);
@@ -47,14 +49,10 @@ const Room = ({ clientID }: { clientID: string }) => {
       });
   }, []);
 
-  // console.log(peer);
-
   const connectToRoom = () => {
     const socket = io("http://localhost:8000");
 
-    // socket.
-
-    socket.emit("join-room", roomID, clientID);
+    socket.emit("join-room", roomID, clientID, localName);
 
     socket.on("user-connected", (userID) => {
       if (localStream) {
@@ -109,9 +107,8 @@ const Room = ({ clientID }: { clientID: string }) => {
 
   return (
     <>
-      <Typography variant="h2">
-        Room {roomID.split("-")[0]} - {connected ? "connected" : "disconnected"}
-      </Typography>
+      <RoomTitle roomID={roomID} connected={connected} />
+
       <Typography variant="h6">Client ID: {clientID.split("-")[0]}</Typography>
 
       <Button variant="contained" onClick={connectToRoom} disabled={connected}>
@@ -137,7 +134,7 @@ const Room = ({ clientID }: { clientID: string }) => {
       <Grid container spacing={2}>
         {localStream && localStream.active && (
           <Grid item xs={12} sm={6} md={6}>
-            <Video stream={localStream} name={"LOCAL"} />
+            <Video stream={localStream} name={localName} mute={true} />
           </Grid>
         )}
 
@@ -150,6 +147,7 @@ const Room = ({ clientID }: { clientID: string }) => {
                   stream={foreignStream.stream}
                   name={foreignStream.userID}
                   key={idx}
+                  mute={false}
                 />
               </Grid>
             )

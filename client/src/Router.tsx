@@ -1,7 +1,7 @@
 import { Container } from "@mui/material";
 import { Switch, Route } from "react-router-dom";
 import Home from "./components/home/Home";
-import Room from "./components/room/Room";
+import EnterRoom from "./components/room/EnterRoom";
 
 const Router = ({ clientID }: { clientID: string }) => {
   return (
@@ -10,7 +10,7 @@ const Router = ({ clientID }: { clientID: string }) => {
         <Route
           exact
           path="/room/:roomID"
-          render={() => <Room clientID={clientID} />}
+          render={() => <EnterRoom clientID={clientID} />}
         />
         <Route path="/" component={Home} />
       </Switch>

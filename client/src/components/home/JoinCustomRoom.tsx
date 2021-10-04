@@ -12,7 +12,7 @@ const JoinCustomRoom = () => {
           <TextField
             value={roomCode}
             onChange={(e) => setRoomCode(e.target.value)}
-          ></TextField>
+          />
         </Grid>
         <Grid item>
           <Button

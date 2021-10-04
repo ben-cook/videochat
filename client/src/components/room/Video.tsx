@@ -4,9 +4,10 @@ import { createRef, useEffect } from "react";
 interface Props {
   stream: MediaStream;
   name: string;
+  mute: boolean;
 }
 
-const Video = ({ stream, name }: Props) => {
+const Video = ({ stream, name, mute }: Props) => {
   const videoRef = createRef<HTMLVideoElement>();
 
   useEffect(() => {
@@ -37,6 +38,7 @@ const Video = ({ stream, name }: Props) => {
             transform: "translate(-50%, -50%)",
             zIndex: 0,
           }}
+          muted={mute}
         />
         <div
           style={{

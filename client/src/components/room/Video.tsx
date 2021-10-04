@@ -38,24 +38,24 @@ const Video = ({ stream, name }: Props) => {
             zIndex: 0,
           }}
         />
-      </div>
-      <div
-        style={{
-          bottom: 0,
-          height: 30,
-          background: "rgba(0, 0, 0, 0.2)",
-          width: "100%",
-          zIndex: 2,
-          backfaceVisibility: "hidden",
-        }}
-      >
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{ opacity: 1, color: "primary.contrastText" }}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            height: 32,
+            background: "rgba(0, 0, 0, 0.4)",
+            width: "100%",
+            zIndex: 2,
+          }}
         >
-          {name}
-        </Typography>
+          <Typography
+            variant="h6"
+            align="center"
+            sx={{ opacity: 1, color: "primary.contrastText" }}
+          >
+            {name}
+          </Typography>
+        </div>
       </div>
     </Card>
   );

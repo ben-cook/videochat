@@ -43,8 +43,7 @@ env:
   CLIENT_CONTAINER_NAME:
     videochat-client # set this to the name of the container in the
     # containerDefinitions section of your task definition
-  SERVER_CONTAINER_NAME:
-    videochat-server
+  SERVER_CONTAINER_NAME: videochat-server
 
 jobs:
   deploy:
@@ -91,7 +90,7 @@ jobs:
           container-name: ${{ env.CLIENT_CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.client-image }}
 
-        - name: Fill in the new server image ID in the Amazon ECS task definition
+      - name: Fill in the new server image ID in the Amazon ECS task definition
         id: task-def-server
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:

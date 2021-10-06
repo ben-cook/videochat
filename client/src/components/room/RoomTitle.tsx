@@ -12,7 +12,7 @@ const RoomTitle = ({ roomID }: Props) => {
 
   const handleClick = () => {
     if (!copied) {
-      const url = `http://localhost:3000/room/${roomID}`;
+      const url = window.location.href;
       navigator.clipboard.writeText(url);
       setCopied(true);
     }

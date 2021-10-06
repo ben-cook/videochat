@@ -40,9 +40,11 @@ env:
   ECS_TASK_DEFINITION:
     task-definition.json # set this to the path to your Amazon ECS task definition
     # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME:
-    MY_CONTAINER_NAME # set this to the name of the container in the
+  CLIENT_CONTAINER_NAME:
+    videochat-client # set this to the name of the container in the
     # containerDefinitions section of your task definition
+  SERVER_CONTAINER_NAME:
+    videochat-server
 
 jobs:
   deploy:
@@ -74,20 +76,28 @@ jobs:
           # Build and push the client container
           docker build -t $ECR_REGISTRY/$CLIENT_ECR_REPOSITORY:$IMAGE_TAG ./client
           docker push $ECR_REGISTRY/$CLIENT_ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=image::$ECR_REGISTRY/$CLIENT_ECR_REPOSITORY:$IMAGE_TAG"
+          echo "::set-output name=client-image::$ECR_REGISTRY/$CLIENT_ECR_REPOSITORY:$IMAGE_TAG"
 
           # Build and push the server container
           docker build -t $ECR_REGISTRY/$SERVER_ECR_REPOSITORY:$IMAGE_TAG ./server
           docker push $ECR_REGISTRY/$SERVER_ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=image::$ECR_REGISTRY/$SERVER_ECR_REPOSITORY:$IMAGE_TAG"
+          echo "::set-output name=server-image::$ECR_REGISTRY/$SERVER_ECR_REPOSITORY:$IMAGE_TAG"
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
+      - name: Fill in the new client image ID in the Amazon ECS task definition
+        id: task-def-client
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
+          container-name: ${{ env.CLIENT_CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.client-image }}
+
+        - name: Fill in the new server image ID in the Amazon ECS task definition
+        id: task-def-server
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.SERVER_CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.server-image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

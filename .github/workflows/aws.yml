@@ -33,7 +33,8 @@ on:
 
 env:
   AWS_REGION: ap-southeast-2 # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: videochat # set this to your Amazon ECR repository name
+  CLIENT_ECR_REPOSITORY: videochat-client # set this to your Amazon ECR repository name
+  SERVER_ECR_REPOSITORY: videochat-server
   ECS_SERVICE: videochat-service # set this to your Amazon ECS service name
   ECS_CLUSTER: videochat # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION:
@@ -70,13 +71,15 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          # docker build -f client/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./client
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          # Build and push the client container
+          docker build -t $ECR_REGISTRY/$CLIENT_ECR_REPOSITORY:$IMAGE_TAG ./client
+          docker push $ECR_REGISTRY/$CLIENT_ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$CLIENT_ECR_REPOSITORY:$IMAGE_TAG"
+
+          # Build and push the server container
+          docker build -t $ECR_REGISTRY/$SERVER_ECR_REPOSITORY:$IMAGE_TAG ./server
+          docker push $ECR_REGISTRY/$SERVER_ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$SERVER_ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def

@@ -3,30 +3,19 @@ version: "3"
 services:
   client:
     build:
-      # target: production
       context: ./client
       dockerfile: Dockerfile
-    #expose:
-    #  - "3000"
     ports:
       - "5000:5000"
-    command: npm run serve
-    image: bencook/videochat-client
+
   server:
     build:
-      # target: production
       context: ./server
       dockerfile: Dockerfile
-    #expose:
-    #  - "8000"
     ports:
       - "8000:8000"
-    command: node build/server.js
-    image: bencook/videochat-server
 
   peerjs:
     image: peerjs/peerjs-server
-    #expose:
-    #  - "9000"
     ports:
       - "9000:9000"

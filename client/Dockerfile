@@ -15,3 +15,9 @@ FROM base as production
 ENV NODE_PATH=./build
 
 RUN npm run build
+
+EXPOSE 5000
+
+RUN echo client text
+
+CMD ["npm", "run", "serve"]

@@ -15,3 +15,7 @@ FROM base as production
 ENV NODE_PATH=./build
 
 RUN npm run build
+
+EXPOSE 8000
+
+CMD ["node", "build/server.js"]

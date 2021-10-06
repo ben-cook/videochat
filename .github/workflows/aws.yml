@@ -41,9 +41,9 @@ env:
     task-definition.json # set this to the path to your Amazon ECS task definition
     # file, e.g. .aws/task-definition.json
   CLIENT_CONTAINER_NAME:
-    videochat-client # set this to the name of the container in the
+    client # set this to the name of the container in the
     # containerDefinitions section of your task definition
-  SERVER_CONTAINER_NAME: videochat-server
+  SERVER_CONTAINER_NAME: server
 
 jobs:
   deploy:

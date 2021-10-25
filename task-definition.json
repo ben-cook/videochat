@@ -143,9 +143,9 @@
   ],
   "placementConstraints": [],
   "memory": "512",
-  "taskRoleArn": "arn:aws:iam::256911681153:role/CdkStack-videochattaskdefinitionTaskRole83A5A4F0-1IOI73QBT4XD5",
+  "taskRoleArn": "arn:aws:iam::256911681153:role/VideochatCdkStack-videochattaskdefinitionTaskRole8-JHDSMF2VIDWK",
   "compatibilities": ["EC2", "FARGATE"],
-  "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:256911681153:task-definition/videochat-task-definition:1",
+  "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:256911681153:task-definition/videochat-task-definition:3",
   "family": "videochat-task-definition",
   "requiresAttributes": [
     {
@@ -189,7 +189,7 @@
   "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
   "cpu": "256",
-  "revision": 1,
+  "revision": 3,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
